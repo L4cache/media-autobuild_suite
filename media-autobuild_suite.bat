@@ -1686,8 +1686,8 @@ if not [%removefstab%]==[no] (
         echo.
         echo.%instdir%\ /trunk ntfs binary,posix=0,noacl,user 0 0
         echo.%instdir%\build\ /build ntfs binary,posix=0,noacl,user 0 0
-        echo.%instdir%\msys64\mingw32\ /mingw32 ntfs binary,posix=0,noacl,user 0 0
-        echo.%instdir%\msys64\mingw64\ /mingw64 ntfs binary,posix=0,noacl,user 0 0
+        echo.%instdir%\msys64\ucrt32\ /ucrt32 ntfs binary,posix=0,noacl,user 0 0
+        echo.%instdir%\msys64\ucrt64\ /ucrt64 ntfs binary,posix=0,noacl,user 0 0
         if "%build32%"=="yes" echo.%instdir%\local32\ /local32 ntfs binary,posix=0,noacl,user 0 0
         if "%build64%"=="yes" echo.%instdir%\local64\ /local64 ntfs binary,posix=0,noacl,user 0 0
     )>"%instdir%\msys64\etc\fstab."
@@ -1849,7 +1849,7 @@ set compileArgs=--cpuCount=%cpuCount% --build32=%build32% --build64=%build64% ^
 --ffmpegPath=%ffmpegPath% --exitearly=%MABS_EXIT_EARLY%
     @REM --autouploadlogs=%autouploadlogs%
     set "noMintty=%noMintty%"
-    if %build64%==yes ( set "MSYSTEM=MINGW64" ) else set "MSYSTEM=MINGW32"
+    if %build64%==yes ( set "MSYSTEM=UCRT64" ) else set "MSYSTEM=UCRT32"
     set "MSYS2_PATH_TYPE=inherit"
     if %noMintty%==y set "PATH=%PATH%"
     set "build=%build%"
@@ -1893,7 +1893,7 @@ goto :EOF
     if %CC%==clang (
         echo.MSYSTEM=CLANG%1
     ) else (
-        echo.MSYSTEM=MINGW%1
+        echo.MSYSTEM=UCRT%1
     )
     echo.source /etc/msystem
     echo.
@@ -2010,7 +2010,7 @@ goto :EOF
 :getmingw
 setlocal
 set found=0
-set "compilers=%instdir%\msys64\mingw%1\bin\gcc.exe %instdir%\msys64\clang%1\bin\clang.exe"
+set "compilers=%instdir%\msys64\ucrt%1\bin\gcc.exe %instdir%\msys64\clang%1\bin\clang.exe"
 for %%i in (%compilers%) do if exist %%i set found=1
 if %found%==1 GOTO :EOF
 echo.-------------------------------------------------------------------------------
@@ -2022,8 +2022,8 @@ if %CC%==clang (
     ) else set prefix=mingw-w64-clang-x86_64-
 ) else (
     if "%1"=="32" (
-        set prefix=mingw-w64-i686-
-    ) else set prefix=mingw-w64-x86_64-
+        set prefix=mingw-w64-ucrt-i686-
+    ) else set prefix=mingw-w64-ucrt-x86_64-
 )
 (
     echo.printf '\033]0;install %1 bit compiler\007'

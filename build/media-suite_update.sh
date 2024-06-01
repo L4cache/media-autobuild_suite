@@ -130,7 +130,7 @@ if [[ -f /etc/pac-base.pk && -f /etc/pac-mingw.pk ]]; then
     prefix_32='' prefix_64=''
     case $CC in
     *clang*) prefix_32=$(extract_pkg_prefix clang32) prefix_64=$(extract_pkg_prefix clang64) ;;
-    *) prefix_32=$(extract_pkg_prefix mingw32) prefix_64=$(extract_pkg_prefix mingw64) ;;
+    *) prefix_32=$(extract_pkg_prefix ucrt32) prefix_64=$(extract_pkg_prefix ucrt64) ;;
     esac
     for pkg in "${newmingw[@]}"; do
         if [[ $build32 == "yes" ]] &&
