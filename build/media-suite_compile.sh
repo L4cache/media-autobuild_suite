@@ -1423,13 +1423,13 @@ if [[ $mediainfo = y ]]; then
     if do_vcs "$SOURCE_REPO_LIBMEDIAINFO" libmediainfo; then
         do_uninstall include/MediaInfo{,DLL} bin-global/libmediainfo-config \
             "${_check[@]}" libmediainfo.la lib/cmake/mediainfolib
-        CFLAGS+=" $($PKG_CONFIG --cflags libzen)" \
-        LDFLAGS+=" $($PKG_CONFIG --cflags --libs libzen)" \
-            do_cmakeinstall Project/CMake -DBUILD_ZLIB=off -DBUILD_ZENLIB=off
-	if [[ $curl = n ]]; then
+        if [[ $curl = n ]]; then
             sed -i 's!find_package(CURL)!!' Project/CMake/CMakeLists.txt
             sed -i 's!"ZenLib/Conf.h"!&\n#define MEDIAINFO_LIBMMS_NO\n#define MEDIAINFO_LIBCURL_NO!' Source/MediaInfo/Setup.h
         fi
+        CFLAGS+=" $($PKG_CONFIG --cflags libzen)" \
+        LDFLAGS+=" $($PKG_CONFIG --cflags --libs libzen)" \
+            do_cmakeinstall Project/CMake -DBUILD_ZLIB=off -DBUILD_ZENLIB=off
         do_checkIfExist
     fi
     fix_cmake_crap_exports "$LOCALDESTDIR/lib/cmake/mediainfolib"
