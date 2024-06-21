@@ -381,7 +381,7 @@ fi
 
 { enabled mbedtls || [[ $curl = mbedtls ]]; } && do_pacman_install mbedtls
 
-if [[ $mediainfo = y || $bmx = y || $curl != n ]]; then
+if [[ $bmx = y || $curl != n ]]; then
     do_pacman_install libunistring
     grep_and_sed dllimport "$MINGW_PREFIX"/include/unistring/woe32dll.h \
         's|__declspec \(dllimport\)||g' "$MINGW_PREFIX"/include/unistring/woe32dll.h
@@ -413,7 +413,7 @@ if [[ $mediainfo = y || $bmx = y || $curl != n ]]; then
     fi
 fi
 
-if [[ $mediainfo = y || $bmx = y || $curl != n || $cyanrip = y ]]; then
+if [[ $bmx = y || $curl != n || $cyanrip = y ]]; then
     do_pacman_install brotli nghttp2
     _check=(curl/curl.h libcurl.{{,l}a,pc})
     case $curl in
@@ -458,6 +458,7 @@ if [[ $mediainfo = y || $bmx = y || $curl != n || $cyanrip = y ]]; then
             cd_safe ..
         fi
         do_checkIfExist
+	cp -f $MINGW_PREFIX/lib/pkgconfig/libzstd.pc $MINGW_PREFIX/lib/pkgconfig/zstd.pc
     fi
 fi
 
@@ -1425,6 +1426,10 @@ if [[ $mediainfo = y ]]; then
         CFLAGS+=" $($PKG_CONFIG --cflags libzen)" \
         LDFLAGS+=" $($PKG_CONFIG --cflags --libs libzen)" \
             do_cmakeinstall Project/CMake -DBUILD_ZLIB=off -DBUILD_ZENLIB=off
+	if [[ $curl = n ]]; then
+            sed -i 's!find_package(CURL)!!' Project/CMake/CMakeLists.txt
+            sed -i 's!"ZenLib/Conf.h"!&\n#define MEDIAINFO_LIBMMS_NO\n#define MEDIAINFO_LIBCURL_NO!' Source/MediaInfo/Setup.h
+        fi
         do_checkIfExist
     fi
     fix_cmake_crap_exports "$LOCALDESTDIR/lib/cmake/mediainfolib"
