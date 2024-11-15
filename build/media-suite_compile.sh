@@ -56,6 +56,7 @@ while true; do
     --rav1e=* ) rav1e=${1#*=} && shift ;;
     --dav1d=* ) dav1d=${1#*=} && shift ;;
     --libavif=* ) libavif=${1#*=} && shift ;;
+    --libheif=* ) libheif=${1#*=} && shift ;;
     --jpegxl=* ) jpegxl=${1#*=} && shift ;;
     --av1an=* ) av1an=${1#*=} && shift ;;
     --vvc=* ) vvc=${1#*=} && shift ;;
@@ -2423,6 +2424,15 @@ if [[ $ffmpeg != no ]]; then
         unset ffmpeg_cflags build_suffix
     fi
 fi
+
+_check=()
+if [[ $libheif = y ]] &&
+    do_vcs "$SOURCE_REPO_LIBHEIF"; then
+    do_uninstall "${_check[@]}"
+    sed -i 's/find_package(Doxygen)/#/' CMakeLists.txt # no configurable option?
+    sed -i 's/find_package(TIFF)/#/' heifio/CMakeLists.txt # configure & linking difficulties
+    do_cmakeinstall -DBUILD_TESTING=OFF
+    do_checkIfExist
 
 # static do_vcs just for svn
 check_mplayer_updates() {
