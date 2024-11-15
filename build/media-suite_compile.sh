@@ -2442,7 +2442,7 @@ if [[ $libheif = y ]] &&
     # pc_exists "uvg266" && extracommands+=("-DWITH_UVG266=ON") # linking difficulties
     pc_exists "libvvenc" && extracommands+=("-DWITH_VVENC=ON")
     pc_exists "libvvdec" && extracommands+=("-DWITH_VVDEC=ON")
-    pc_exists "libavcodec" "libavutil" && extracommands+=("-DWITH_FFMPEG_DECODER=ON")
+    # pc_exists "libavcodec" "libavutil" && extracommands+=("-DWITH_FFMPEG_DECODER=ON") # linking difficulties
     do_cmakeinstall video -DBUILD_TESTING=OFF -DWITH_GDK_PIXBUF=OFF "${extracommands[@]}"
     do_checkIfExist
 fi
