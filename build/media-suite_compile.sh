@@ -2425,14 +2425,27 @@ if [[ $ffmpeg != no ]]; then
     fi
 fi
 
-_check=()
+_check=(bin-video/heif-{dec,enc,info,thumbnailer}.exe)
 if [[ $libheif = y ]] &&
     do_vcs "$SOURCE_REPO_LIBHEIF"; then
     do_uninstall "${_check[@]}"
     sed -i 's/find_package(Doxygen)/#/' CMakeLists.txt # no configurable option?
+    sed -i 's/find_package(Brotli)/#/' CMakeLists.txt # linking difficulties
     sed -i 's/find_package(TIFF)/#/' heifio/CMakeLists.txt # configure & linking difficulties
-    do_cmakeinstall -DBUILD_TESTING=OFF
+    extracommands=("-DWITH_HEADER_COMPRESSION=ON -DWITH_UNCOMPRESSED_CODEC=ON")
+    pc_exists "x265" && extracommands+=("-DWITH_X265=ON")
+    # pc_exists "kvazaar" && extracommands+=("-DWITH_KVAZAAR=ON") # linking difficulties
+    pc_exists "aom" && extracommands+=("-DWITH_AOM_{DE,EN}CODER=ON")
+    pc_exists "dav1d" && extracommands+=("-DWITH_DAV1D=ON")
+    pc_exists "rav1e" && extracommands+=("-DWITH_RAV1E=ON")
+    pc_exists "SvtAv1Enc" && extracommands+=("-DWITH_SvtEnc=ON")
+    # pc_exists "uvg266" && extracommands+=("-DWITH_UVG266=ON") # linking difficulties
+    pc_exists "libvvenc" && extracommands+=("-DWITH_VVENC=ON")
+    pc_exists "libvvdec" && extracommands+=("-DWITH_VVDEC=ON")
+    pc_exists "libavcodec" "libavutil" && extracommands+=("_DWITH_FFMPEG_DECODER=ON")
+    do_cmakeinstall video -DBUILD_TESTING=OFF -DWITH_GDK_PIXBUF=OFF "${extracommands[@]}"
     do_checkIfExist
+fi
 
 # static do_vcs just for svn
 check_mplayer_updates() {
