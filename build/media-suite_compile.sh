@@ -2446,7 +2446,7 @@ if [[ $libheif = y ]] &&
     # pc_exists "kvazaar" && extracommands+=("-DWITH_KVAZAAR=ON") # linking difficulties
     pc_exists "aom" && extracommands+=("-DWITH_AOM_{DE,EN}CODER=ON")
     pc_exists "dav1d" && extracommands+=("-DWITH_DAV1D=ON")
-    pc_exists "rav1e" && extracommands+=("-DWITH_RAV1E=ON")
+    # pc_exists "rav1e" && extracommands+=("-DWITH_RAV1E=ON") # linking difficulties
     pc_exists "SvtAv1Enc" && extracommands+=("-DWITH_SvtEnc=ON")
     # pc_exists "uvg266" && extracommands+=("-DWITH_UVG266=ON") # linking difficulties
     pc_exists "libvvenc" && extracommands+=("-DWITH_VVENC=ON")
