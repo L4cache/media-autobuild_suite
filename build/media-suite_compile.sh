@@ -2425,6 +2425,13 @@ if [[ $ffmpeg != no ]]; then
     fi
 fi
 
+_check=()
+if [[ $libheif = y ]] &&
+    do_vcs "$SOURCE_REPO_LIBDE265"; then
+    do_uninstall "${_check[@]}"
+    do_cmakeinstall video
+fi
+
 _check=(bin-video/heif-{dec,enc,info,thumbnailer}.exe)
 if [[ $libheif = y ]] &&
     do_vcs "$SOURCE_REPO_LIBHEIF"; then

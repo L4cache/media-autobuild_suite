@@ -40,6 +40,7 @@ SOURCE_REPO_LIBAVIF=https://github.com/AOMediaCodec/libavif.git
 SOURCE_REPO_LIBBDPLUS=https://code.videolan.org/videolan/libbdplus.git
 SOURCE_REPO_LIBBLURAY=https://code.videolan.org/videolan/libbluray.git
 SOURCE_REPO_LIBBMX=https://github.com/bbc/bmx.git
+SOURCE_REPO_LIBDE265=https://github.com/strukturag/libde265.git
 SOURCE_REPO_LIBDVDNAV=https://code.videolan.org/videolan/libdvdnav.git
 SOURCE_REPO_LIBDVDREAD=https://code.videolan.org/videolan/libdvdread.git
 SOURCE_REPO_LIBGLUT=https://github.com/dcnieho/FreeGLUT.git
