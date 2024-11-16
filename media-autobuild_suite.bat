@@ -412,7 +412,7 @@ if [0]==[%libheifINI%] (
     echo. Binaries being built depends on "standalone=y" and are always static.
     echo. Will use available encoders and decoders supported by libheif.
     echo. If not found, built libheif will lack the corresponding encode/decode ability.
-    echo. Additionally libde265 will be built.
+    @REM echo. Additionally libde265 will be built.
     echo.
     echo -------------------------------------------------------------------------------
     echo -------------------------------------------------------------------------------

@@ -2425,12 +2425,13 @@ if [[ $ffmpeg != no ]]; then
     fi
 fi
 
-_check=()
-if [[ $libheif = y ]] &&
-    do_vcs "$SOURCE_REPO_LIBDE265"; then
-    do_uninstall "${_check[@]}"
-    do_cmakeinstall video
-fi
+# _check=()
+# if [[ $libheif = y ]] &&
+#     do_vcs "$SOURCE_REPO_LIBDE265"; then
+#     do_uninstall "${_check[@]}"
+#     do_cmakeinstall video
+#     do_checkIfExist
+# fi
 
 _check=(bin-video/heif-{dec,enc,info,thumbnailer}.exe)
 if [[ $libheif = y ]] &&
@@ -2440,6 +2441,7 @@ if [[ $libheif = y ]] &&
     sed -i 's/find_package(Brotli)/#/' CMakeLists.txt # linking difficulties
     sed -i 's/find_package(TIFF)/#/' heifio/CMakeLists.txt # configure & linking difficulties
     extracommands=("-DWITH_HEADER_COMPRESSION=ON -DWITH_UNCOMPRESSED_CODEC=ON")
+    pc_exists "libde265" && extracommands+=("-DWITH_LIBDE265=OFF") #linking difficulties
     pc_exists "x265" && extracommands+=("-DWITH_X265=ON")
     # pc_exists "kvazaar" && extracommands+=("-DWITH_KVAZAAR=ON") # linking difficulties
     pc_exists "aom" && extracommands+=("-DWITH_AOM_{DE,EN}CODER=ON")
