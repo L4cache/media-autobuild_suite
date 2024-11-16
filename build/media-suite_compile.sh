@@ -2440,18 +2440,18 @@ if [[ $libheif = y ]] &&
     sed -i 's/find_package(Doxygen)/#/' CMakeLists.txt # no configurable option?
     sed -i 's/find_package(Brotli)/#/' CMakeLists.txt # linking difficulties
     sed -i 's/find_package(TIFF)/#/' heifio/CMakeLists.txt # configure & linking difficulties
-    extracommands=("-DWITH_HEADER_COMPRESSION=ON -DWITH_UNCOMPRESSED_CODEC=ON")
-    pc_exists "libde265" && extracommands+=("-DWITH_LIBDE265=OFF") #linking difficulties
-    pc_exists "x265" && extracommands+=("-DWITH_X265=ON")
-    # pc_exists "kvazaar" && extracommands+=("-DWITH_KVAZAAR=ON") # linking difficulties
-    pc_exists "aom" && extracommands+=("-DWITH_AOM_{DE,EN}CODER=ON")
-    pc_exists "dav1d" && extracommands+=("-DWITH_DAV1D=ON")
-    # pc_exists "rav1e" && extracommands+=("-DWITH_RAV1E=ON") # linking difficulties
-    pc_exists "SvtAv1Enc" && extracommands+=("-DWITH_SvtEnc=ON")
-    # pc_exists "uvg266" && extracommands+=("-DWITH_UVG266=ON") # linking difficulties
-    pc_exists "libvvenc" && extracommands+=("-DWITH_VVENC=ON")
-    pc_exists "libvvdec" && extracommands+=("-DWITH_VVDEC=ON")
-    # pc_exists "libavcodec" "libavutil" && extracommands+=("-DWITH_FFMPEG_DECODER=ON") # linking difficulties
+    extracommands=(-DWITH_HEADER_COMPRESSION=ON -DWITH_UNCOMPRESSED_CODEC=ON)
+    pc_exists "libde265" && extracommands+=(-DWITH_LIBDE265=OFF -DWITH_LIBDE265_PLUGIN=OFF) #linking difficulties
+    pc_exists "x265" && extracommands+=(-DWITH_X265=ON -DWITH_X265_PLUGIN=OFF)
+    # pc_exists "kvazaar" && extracommands+=(-DWITH_KVAZAAR=ON -DWITH_KVAZAAR_PLUGIN=OFF) # linking difficulties
+    pc_exists "aom" && extracommands+=(-DWITH_AOM_{DE,EN}CODER=ON -DWITH_AOM_{DE,EN}CODER_PLUGIN=OFF)
+    pc_exists "dav1d" && extracommands+=(-DWITH_DAV1D=ON -DWITH_DAV1D_PLUGIN=OFF)
+    # pc_exists "rav1e" && extracommands+=(-DWITH_RAV1E=ON -DWITH_RAV1E_PLUGIN=OFF) # linking difficulties
+    pc_exists "SvtAv1Enc" && extracommands+=(-DWITH_SvtEnc=ON -DWITH_SvtEnc_PLUGIN=OFF)
+    # pc_exists "uvg266" && extracommands+=(-DWITH_UVG266=ON -DWITH_UVG266_PLUGIN=OFF) # linking difficulties
+    pc_exists "libvvenc" && extracommands+=(-DWITH_VVENC=ON -DWITH_VVENC_PLUGIN=OFF)
+    pc_exists "libvvdec" && extracommands+=(-DWITH_VVDEC=ON -DWITH_VVDEC_PLUGIN=OFF)
+    # pc_exists "libavcodec" "libavutil" && extracommands+=(-DWITH_FFMPEG_DECODER=ON -DWITH_FFMPEG_DECODER_PLUGIN=OFF) # linking difficulties
     do_cmakeinstall video -DBUILD_TESTING=OFF -DWITH_GDK_PIXBUF=OFF "${extracommands[@]}"
     do_checkIfExist
 fi
