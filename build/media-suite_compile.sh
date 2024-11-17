@@ -2437,31 +2437,48 @@ _check=(bin-video/heif-{dec,enc,info,thumbnailer}.exe)
 if [[ $libheif = y ]] &&
     do_vcs "$SOURCE_REPO_LIBHEIF"; then
     do_uninstall "${_check[@]}"
+
     sed -i 's/find_package(vvdec 2.3.0)/find_package(vvdec 3.0.0)/' CMakeLists.txt
     sed -i 's/find_package(Doxygen)/#/' CMakeLists.txt # no configurable option?
     sed -i 's/find_package(Brotli)/#/' CMakeLists.txt # linking difficulties
     sed -i 's/find_package(TIFF)/#/' heifio/CMakeLists.txt # configure & linking difficulties
+
     extracflags=()
     extracommands=(-DWITH_HEADER_COMPRESSION=ON -DWITH_UNCOMPRESSED_CODEC=ON)
-    pc_exists "libde265" && extracommands+=(-DWITH_LIBDE265=OFF -DWITH_LIBDE265_PLUGIN=OFF) && extracflags+=(-DLIBDE265_STATIC_BUILD=1)
-    pc_exists "x265" && extracommands+=(-DWITH_X265=ON -DWITH_X265_PLUGIN=OFF)
-    pc_exists "kvazaar" && extracommands+=(-DWITH_KVAZAAR=ON -DWITH_KVAZAAR_PLUGIN=OFF) && extracflags+=(-DKVZ_STATIC_LIB=1)
-    pc_exists "aom" && extracommands+=(-DWITH_AOM_{DE,EN}CODER=ON -DWITH_AOM_{DE,EN}CODER_PLUGIN=OFF)
-    pc_exists "dav1d" && extracommands+=(-DWITH_DAV1D=ON -DWITH_DAV1D_PLUGIN=OFF)
+    pc_exists "libde265" &&
+        extracommands+=(-DWITH_LIBDE265=OFF -DWITH_LIBDE265_PLUGIN=OFF) &&
+        extracflags+=(-DLIBDE265_STATIC_BUILD=1)
+    pc_exists "x265" &&
+        extracommands+=(-DWITH_X265=ON -DWITH_X265_PLUGIN=OFF)
+    pc_exists "kvazaar" &&
+        extracommands+=(-DWITH_KVAZAAR=ON -DWITH_KVAZAAR_PLUGIN=OFF) &&
+        extracflags+=(-DKVZ_STATIC_LIB=1)
+    pc_exists "aom" &&
+        extracommands+=(-DWITH_AOM_{DE,EN}CODER=ON -DWITH_AOM_{DE,EN}CODER_PLUGIN=OFF)
+    pc_exists "dav1d" &&
+        extracommands+=(-DWITH_DAV1D=ON -DWITH_DAV1D_PLUGIN=OFF)
     # pc_exists "rav1e" && extracommands+=(-DWITH_RAV1E=ON -DWITH_RAV1E_PLUGIN=OFF) # linking difficulties
-    pc_exists "SvtAv1Enc" && extracommands+=(-DWITH_SvtEnc=ON -DWITH_SvtEnc_PLUGIN=OFF)
-    pc_exists "uvg266" && extracommands+=(-DWITH_UVG266=ON -DWITH_UVG266_PLUGIN=OFF) && extracflags+=(-DUVG_STATIC_LIB=1)
-    pc_exists "libvvenc" && extracommands+=(-DWITH_VVENC=ON -DWITH_VVENC_PLUGIN=OFF)
-    pc_exists "libvvdec" && extracommands+=(-DWITH_VVDEC=ON -DWITH_VVDEC_PLUGIN=OFF)
+    pc_exists "SvtAv1Enc" &&
+        extracommands+=(-DWITH_SvtEnc=ON -DWITH_SvtEnc_PLUGIN=OFF)
+    pc_exists "uvg266" &&
+        extracommands+=(-DWITH_UVG266=ON -DWITH_UVG266_PLUGIN=OFF) &&
+        extracflags+=(-DUVG_STATIC_LIB=1)
+    pc_exists "libvvenc" &&
+        extracommands+=(-DWITH_VVENC=ON -DWITH_VVENC_PLUGIN=OFF)
+    pc_exists "libvvdec" &&
+        extracommands+=(-DWITH_VVDEC=ON -DWITH_VVDEC_PLUGIN=OFF)
     # pc_exists "libavcodec" "libavutil" && extracommands+=(-DWITH_FFMPEG_DECODER=ON -DWITH_FFMPEG_DECODER_PLUGIN=OFF) # linking difficulties
-    pacman -Q $MINGW_PACKAGE_PREFIX-libjpeg > /dev/null 2>&1 && extracommands+=(-DWITH_JPEG_{DE,EN}CODER=ON -DWITH_JPEG_{DE,EN}CODER_PLUGIN=OFF)
+    pacman -Q $MINGW_PACKAGE_PREFIX-libjpeg > /dev/null 2>&1 &&
+        extracommands+=(-DWITH_JPEG_{DE,EN}CODER=ON -DWITH_JPEG_{DE,EN}CODER_PLUGIN=OFF)
     # don't fail on .dll.a not found because we hide it
     # still need to make it link to static lib as it still wants to link to .dll.a and fails
     # pacman -Q $MINGW_PACKAGE_PREFIX-openjpeg2 > /dev/null 2>&1 &&
     #     sed -i 's/message(FATAL_ERROR "The imported target/message(WARNING "The imported target/' \
     #     "$MINGW_PREFIX"/lib/cmake/openjpeg-2.5/OpenJPEGTargets.cmake &&
     #     extracommands+=(-DWITH_OpenJPEG_{DE,EN}CODER=ON -DWITH_OpenJPEG_{DE,EN}CODER_PLUGIN=OFF)
-    CFLAGS+=" ${extracflags[@]}" CXXFLAGS+=" ${extracflags[@]}" do_cmakeinstall video -DBUILD_TESTING=OFF -DWITH_GDK_PIXBUF=OFF "${extracommands[@]}"
+
+    CFLAGS+=" ${extracflags[@]}" CXXFLAGS+=" ${extracflags[@]}" \
+        do_cmakeinstall video -DBUILD_TESTING=OFF -DWITH_GDK_PIXBUF=OFF "${extracommands[@]}"
     do_checkIfExist
 fi
 
