@@ -2429,7 +2429,10 @@ _check=(libde265.a)
 if [[ $libheif = y ]] &&
     do_vcs "$SOURCE_REPO_LIBDE265"; then
     do_uninstall "${_check[@]}"
-    do_cmakeinstall video
+    [[ $standalone != n ]] && _check+=(bin-video/dec265.exe)
+    extracommands=()
+    [[ $standalone = n ]] && extracommands+=(-DENABLE_DECODER=OFF)
+    do_cmakeinstall video "${extracommands[@]}"
     do_checkIfExist
 fi
 
