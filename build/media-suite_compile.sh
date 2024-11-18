@@ -2446,7 +2446,7 @@ if [[ $libheif = y ]] &&
     extracflags=()
     extracommands=(-DWITH_HEADER_COMPRESSION=ON -DWITH_UNCOMPRESSED_CODEC=ON)
     pc_exists "libde265" &&
-        extracommands+=(-DWITH_LIBDE265=OFF -DWITH_LIBDE265_PLUGIN=OFF) &&
+        extracommands+=(-DWITH_LIBDE265=ON -DWITH_LIBDE265_PLUGIN=OFF) &&
         extracflags+=(-DLIBDE265_STATIC_BUILD=1)
     pc_exists "x265" &&
         extracommands+=(-DWITH_X265=ON -DWITH_X265_PLUGIN=OFF)
@@ -2457,7 +2457,6 @@ if [[ $libheif = y ]] &&
         extracommands+=(-DWITH_AOM_{DE,EN}CODER=ON -DWITH_AOM_{DE,EN}CODER_PLUGIN=OFF)
     pc_exists "dav1d" &&
         extracommands+=(-DWITH_DAV1D=ON -DWITH_DAV1D_PLUGIN=OFF)
-    # pc_exists "rav1e" && extracommands+=(-DWITH_RAV1E=ON -DWITH_RAV1E_PLUGIN=OFF) # linking difficulties
     pc_exists "SvtAv1Enc" &&
         extracommands+=(-DWITH_SvtEnc=ON -DWITH_SvtEnc_PLUGIN=OFF)
     pc_exists "uvg266" &&
@@ -2467,7 +2466,6 @@ if [[ $libheif = y ]] &&
         extracommands+=(-DWITH_VVENC=ON -DWITH_VVENC_PLUGIN=OFF)
     pc_exists "libvvdec" &&
         extracommands+=(-DWITH_VVDEC=ON -DWITH_VVDEC_PLUGIN=OFF)
-    # pc_exists "libavcodec" "libavutil" && extracommands+=(-DWITH_FFMPEG_DECODER=ON -DWITH_FFMPEG_DECODER_PLUGIN=OFF) # linking difficulties
     pacman -Q $MINGW_PACKAGE_PREFIX-libjpeg > /dev/null 2>&1 &&
         extracommands+=(-DWITH_JPEG_{DE,EN}CODER=ON -DWITH_JPEG_{DE,EN}CODER_PLUGIN=OFF)
     # don't fail on .dll.a not found because we hide it
@@ -2476,6 +2474,12 @@ if [[ $libheif = y ]] &&
     #     sed -i 's/message(FATAL_ERROR "The imported target/message(WARNING "The imported target/' \
     #     "$MINGW_PREFIX"/lib/cmake/openjpeg-2.5/OpenJPEGTargets.cmake &&
     #     extracommands+=(-DWITH_OpenJPEG_{DE,EN}CODER=ON -DWITH_OpenJPEG_{DE,EN}CODER_PLUGIN=OFF)
+    
+    # linking difficulties
+    pc_exists "rav1e" &&
+        extracommands+=(-DWITH_RAV1E=OFF -DWITH_RAV1E_PLUGIN=OFF)
+    pc_exists "libavcodec" "libavutil" &&
+        extracommands+=(-DWITH_FFMPEG_DECODER=OFF -DWITH_FFMPEG_DECODER_PLUGIN=OFF)
 
     CFLAGS+=" ${extracflags[@]}" CXXFLAGS+=" ${extracflags[@]}" \
         do_cmakeinstall video -DBUILD_TESTING=OFF -DWITH_GDK_PIXBUF=OFF "${extracommands[@]}"
