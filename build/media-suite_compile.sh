@@ -2431,7 +2431,7 @@ if [[ $libheif = y ]] &&
     do_vcs "$SOURCE_REPO_LIBDE265"; then
     do_uninstall "${_check[@]}"
     extracommands=()
-    [[ $standalone = n ]] && extracommands+=(-DENABLE_DECODER=OFF)
+    [[ $standalone = n ]] && extracommands+=(-DENABLE_{DE,EN}CODER=OFF)
     do_cmakeinstall video "${extracommands[@]}"
     do_checkIfExist
 fi
