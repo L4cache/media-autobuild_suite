@@ -2489,7 +2489,7 @@ if [[ $libheif = y ]] &&
     CFLAGS+=" ${extracflags[@]}" CXXFLAGS+=" ${extracflags[@]}" \
         do_cmakeinstall video -DBUILD_TESTING=OFF -DWITH_GDK_PIXBUF=OFF "${extracommands[@]}"
     do_checkIfExist
-    rmdir "$LOCALDESTDIR/lib/libheif" 2>&1
+    rmdir "$LOCALDESTDIR/lib/libheif" > /dev/null 2>&1
 fi
 
 # static do_vcs just for svn
