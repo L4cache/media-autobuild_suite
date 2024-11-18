@@ -2477,7 +2477,9 @@ if [[ $libheif = y ]] &&
     #     sed -i 's/message(FATAL_ERROR "The imported target/message(WARNING "The imported target/' \
     #     "$MINGW_PREFIX"/lib/cmake/openjpeg-2.5/OpenJPEGTargets.cmake &&
     #     extracommands+=(-DWITH_OpenJPEG_{DE,EN}CODER=ON -DWITH_OpenJPEG_{DE,EN}CODER_PLUGIN=OFF)
-    
+    pacman -Q $MINGW_PACKAGE_PREFIX-openh264 > /dev/null 2>&1 &&
+        extracommands+=(-DWITH_OpenH264_DECODER=ON -DWITH_OpenH264_DECODER_PLUGIN=OFF)
+
     # linking difficulties
     pc_exists "rav1e" &&
         extracommands+=(-DWITH_RAV1E=OFF -DWITH_RAV1E_PLUGIN=OFF)
@@ -2487,6 +2489,7 @@ if [[ $libheif = y ]] &&
     CFLAGS+=" ${extracflags[@]}" CXXFLAGS+=" ${extracflags[@]}" \
         do_cmakeinstall video -DBUILD_TESTING=OFF -DWITH_GDK_PIXBUF=OFF "${extracommands[@]}"
     do_checkIfExist
+    rmdir "$LOCALDESTDIR/lib/libheif" 2>&1
 fi
 
 # static do_vcs just for svn
