@@ -811,20 +811,26 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     else
         extracommands=(-DWHISPER_STANDALONE=OFF)
     fi
-    do_pacman_install omp vulkan-loader vulkan-headers spirv-tools glslang shaderc
-    extracommands+=(-DGGML_OPENMP=ON -DGGML_VULKAN=ON)
+    do_pacman_install omp
+    extracommands+=(-DGGML_OPENMP=ON)
+    if enabled_any vulkan libplacebo; then
+        do_pacman_install vulkan-loader vulkan-headers shaderc
+        extracommands+=(-DGGML_VULKAN=ON)
+    fi
     do_cmakeinstall "${extracommands[@]}"
     mv -f "$LOCALDESTDIR"/lib/ggml.a "$LOCALDESTDIR"/lib/libggml.a
     mv -f "$LOCALDESTDIR"/lib/ggml-base.a "$LOCALDESTDIR"/lib/libggml-base.a
     mv -f "$LOCALDESTDIR"/lib/ggml-cpu.a "$LOCALDESTDIR"/lib/libggml-cpu.a
     if [[ $CC =~ clang ]]; then
-        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-cpu -lggml-base -lomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-vulkan -lvulkan -lggml-cpu -lggml-base -lomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
     else
-        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-cpu -lggml-base -lgomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-vulkan -lvulkan -lggml-cpu -lggml-base -lgomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
     fi
     do_checkIfExist
     unset extracommands
-    do_pacman_remove vulkan-loader vulkan-headers spirv-tools glslang shaderc
+    if enabled_any vulkan libplacebo; then
+        do_pacman_remove vulkan-loader vulkan-headers shaderc
+    fi
 fi
 
 if [[ $exitearly = EE3 ]]; then
