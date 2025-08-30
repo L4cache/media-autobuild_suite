@@ -811,8 +811,8 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     else
         extracommands=(-DWHISPER_STANDALONE=OFF)
     fi
-    do_pacman_install omp
-    extracommands+=(-DGGML_OPENMP=ON)
+    do_pacman_install omp vulkan-loader vulkan-headers spirv-tools glslang shaderc
+    extracommands+=(-DGGML_OPENMP=ON -DGGML_VULKAN=ON)
     do_cmakeinstall "${extracommands[@]}"
     mv -f "$LOCALDESTDIR"/lib/ggml.a "$LOCALDESTDIR"/lib/libggml.a
     mv -f "$LOCALDESTDIR"/lib/ggml-base.a "$LOCALDESTDIR"/lib/libggml-base.a
@@ -824,6 +824,7 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     fi
     do_checkIfExist
     unset extracommands
+    do_pacman_remove vulkan-loader vulkan-headers spirv-tools glslang shaderc
 fi
 
 if [[ $exitearly = EE3 ]]; then
