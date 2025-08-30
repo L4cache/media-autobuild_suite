@@ -806,6 +806,7 @@ _check=(libwhisper.a libggml{,-{base,cpu,vulkan}}.a whisper.{pc,h} ggml{,-{alloc
 [[ $standalone = y ]] && _check+=(bin/vad-speech-segments.exe bin/whisper-{bench,cli,server}.exe)
 if [[ $ffmpeg != no ]] && enabled whisper &&
     do_vcs "$SOURCE_REPO_WHISPER_CPP"; then
+    do_uninstall "${_check[@]}"
     if [[ $standalone = y ]]; then
         extracommands=(-DWHISPER_STANDALONE=ON)
     else
@@ -830,7 +831,7 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     do_checkIfExist
     unset extracommands
     if enabled_any vulkan libplacebo; then
-        do_pacman_remove vulkan-loader vulkan-headers shaderc
+        do_pacman_remove shaderc
     fi
 fi
 
@@ -2278,9 +2279,12 @@ if [[ $ffmpeg != no ]] && enabled avisynth &&
 fi
 
 _check=(libvulkan.a vulkan.pc vulkan/vulkan.h d3d{kmthk,ukmdt}.h)
-if { { [[ $ffmpeg != no ]] && enabled_any vulkan libplacebo; } ||
+if enabled whisper; then
+    do_uninstall "${_check[@]}"
+elif { { [[ $ffmpeg != no ]] && enabled_any vulkan libplacebo; } ||
      { [[ $mpv != n ]] && ! mpv_disabled_any vulkan libplacebo; } } &&
     do_vcs "$SOURCE_REPO_VULKANLOADER" vulkan-loader; then
+    do_pacman_remove vulkan-loader vulkan-headers
     _wine_mirror=https://raw.githubusercontent.com/wine-mirror/wine/master/include
     _mabs=https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/vulkan-loader
     do_pacman_install uasm
