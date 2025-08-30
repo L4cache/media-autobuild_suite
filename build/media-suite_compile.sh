@@ -802,15 +802,23 @@ if [[ $ffmpeg != no ]] && enabled libzimg &&
     do_checkIfExist
 fi
 
-_check=(libwhisper.a ggml{,-base,-cpu}.a whisper.{pc,h} ggml{,-{alloc,backend,blas,cann,cpp,cpu,cuda,metal,opt,rpc,sycl,vulkan,webgpu}}.h gguf.h)
+_check=(libwhisper.a libggml{,-base,-cpu}.a whisper.{pc,h} ggml{,-{alloc,backend,cpu}}.h)
+[[ $standalone = y ]] && _check+=(bin/vad-speech-segments.exe bin/whisper-{bench,cli,server}.exe)
 if [[ $ffmpeg != no ]] && enabled whisper &&
     do_vcs "$SOURCE_REPO_WHISPER_CPP"; then
-    do_cmakeinstall
+    if [[ $standalone = y ]]; then
+        extracommands=(-DWHISPER_STANDALONE=ON)
+    else
+        extracommands=(-DWHISPER_STANDALONE=OFF)
+    fi
+    extracommands+=(-DGGML_OPENMP=OFF) # LLVM OpenMP doesn't seem to make much difference in my test - and libgomp actually makes it slower
+    do_cmakeinstall "${extracommands[@]}"
     mv -f "$LOCALDESTDIR"/lib/ggml.a "$LOCALDESTDIR"/lib/libggml.a
     mv -f "$LOCALDESTDIR"/lib/ggml-base.a "$LOCALDESTDIR"/lib/libggml-base.a
     mv -f "$LOCALDESTDIR"/lib/ggml-cpu.a "$LOCALDESTDIR"/lib/libggml-cpu.a
-    sed -i "s|Libs: -L${libdir} -lggml  -lggml-base -lwhisper|Libs: -L${libdir} -lggml -lggml-cpu -lggml-base -lwhisper -lomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+    sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-cpu -lggml-base|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
     do_checkIfExist
+    unset extracommands
 fi
 
 if [[ $exitearly = EE3 ]]; then
