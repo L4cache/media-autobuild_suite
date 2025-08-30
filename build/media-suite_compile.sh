@@ -811,12 +811,17 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     else
         extracommands=(-DWHISPER_STANDALONE=OFF)
     fi
-    extracommands+=(-DGGML_OPENMP=OFF) # LLVM OpenMP doesn't seem to make much difference in my test - and libgomp actually makes it slower
+    do_pacman_install omp
+    extracommands+=(-DGGML_OPENMP=ON)
     do_cmakeinstall "${extracommands[@]}"
     mv -f "$LOCALDESTDIR"/lib/ggml.a "$LOCALDESTDIR"/lib/libggml.a
     mv -f "$LOCALDESTDIR"/lib/ggml-base.a "$LOCALDESTDIR"/lib/libggml-base.a
     mv -f "$LOCALDESTDIR"/lib/ggml-cpu.a "$LOCALDESTDIR"/lib/libggml-cpu.a
-    sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-cpu -lggml-base|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+    if [[ $CC =~ clang ]]; then
+        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-cpu -lggml-base -lomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+    else
+        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-cpu -lggml-base -lgomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+    fi
     do_checkIfExist
     unset extracommands
 fi
