@@ -802,7 +802,7 @@ if [[ $ffmpeg != no ]] && enabled libzimg &&
     do_checkIfExist
 fi
 
-_check=(libwhisper.a libggml{,-base,-cpu}.a whisper.{pc,h} ggml{,-{alloc,backend,cpu}}.h)
+_check=(libwhisper.a libggml{,-{base,cpu,vulkan}}.a whisper.{pc,h} ggml{,-{alloc,backend,cpu,vulkan}}.h)
 [[ $standalone = y ]] && _check+=(bin/vad-speech-segments.exe bin/whisper-{bench,cli,server}.exe)
 if [[ $ffmpeg != no ]] && enabled whisper &&
     do_vcs "$SOURCE_REPO_WHISPER_CPP"; then
@@ -821,6 +821,7 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     mv -f "$LOCALDESTDIR"/lib/ggml.a "$LOCALDESTDIR"/lib/libggml.a
     mv -f "$LOCALDESTDIR"/lib/ggml-base.a "$LOCALDESTDIR"/lib/libggml-base.a
     mv -f "$LOCALDESTDIR"/lib/ggml-cpu.a "$LOCALDESTDIR"/lib/libggml-cpu.a
+    mv -f "$LOCALDESTDIR"/lib/ggml-vulkan.a "$LOCALDESTDIR"/lib/libggml-vulkan.a
     if [[ $CC =~ clang ]]; then
         sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-vulkan -lvulkan -lggml-cpu -lggml-base -lomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
     else
