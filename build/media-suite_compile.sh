@@ -802,6 +802,17 @@ if [[ $ffmpeg != no ]] && enabled libzimg &&
     do_checkIfExist
 fi
 
+_check=(libwhisper.a ggml{,-base,-cpu}.a whisper.{pc,h} ggml{,-{alloc,backend,blas,cann,cpp,cpu,cuda,metal,opt,rpc,sycl,vulkan,webgpu}}.h gguf.h)
+if [[ $ffmpeg != no ]] && enabled whisper &&
+    do_vcs "$SOURCE_REPO_WHISPER_CPP"; then
+    do_cmakeinstall
+    mv -f "$LOCALDESTDIR"/lib/ggml.a "$LOCALDESTDIR"/lib/libggml.a
+    mv -f "$LOCALDESTDIR"/lib/ggml-base.a "$LOCALDESTDIR"/lib/libggml-base.a
+    mv -f "$LOCALDESTDIR"/lib/ggml-cpu.a "$LOCALDESTDIR"/lib/libggml-cpu.a
+    sed -i "s|Libs: -L${libdir} -lggml  -lggml-base -lwhisper|Libs: -L${libdir} -lggml -lggml-cpu -lggml-base -lwhisper -lomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+    do_checkIfExist
+fi
+
 if [[ $exitearly = EE3 ]]; then
     do_simple_print -p '\n\t'"${orange}Exit due to env var MABS_EXIT_EARLY set to EE3"
     return
