@@ -814,10 +814,8 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     fi
     do_pacman_install omp
     extracommands+=(-DGGML_OPENMP=ON)
-    if enabled_any vulkan libplacebo; then
-        do_pacman_install vulkan-loader vulkan-headers shaderc
-        extracommands+=(-DGGML_VULKAN=ON)
-    fi
+    do_pacman_install vulkan-loader vulkan-headers shaderc
+    extracommands+=(-DGGML_VULKAN=ON)
     do_cmakeinstall "${extracommands[@]}"
     mv -f "$LOCALDESTDIR"/lib/ggml.a "$LOCALDESTDIR"/lib/libggml.a
     mv -f "$LOCALDESTDIR"/lib/ggml-base.a "$LOCALDESTDIR"/lib/libggml-base.a
