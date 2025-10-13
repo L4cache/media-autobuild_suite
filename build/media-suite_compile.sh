@@ -814,7 +814,7 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     fi
     do_pacman_install omp
     extracommands+=(-DGGML_OPENMP=ON)
-    do_pacman_install vulkan-loader vulkan-headers shaderc
+    sed -i "s|vulkan-1|vulkan|" "$MINGW_PREFIX/share/cmake/Modules/FindVulkan.cmake"
     extracommands+=(-DGGML_VULKAN=ON)
     do_cmakeinstall "${extracommands[@]}"
     mv -f "$LOCALDESTDIR"/lib/ggml.a "$LOCALDESTDIR"/lib/libggml.a
@@ -822,15 +822,12 @@ if [[ $ffmpeg != no ]] && enabled whisper &&
     mv -f "$LOCALDESTDIR"/lib/ggml-cpu.a "$LOCALDESTDIR"/lib/libggml-cpu.a
     mv -f "$LOCALDESTDIR"/lib/ggml-vulkan.a "$LOCALDESTDIR"/lib/libggml-vulkan.a
     if [[ $CC =~ clang ]]; then
-        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-vulkan -lvulkan-1 -lggml-cpu -lggml-base -lomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-vulkan -lvulkan -lcfgmgr32 -lggml-cpu -lggml-base -lomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
     else
-        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-vulkan -lvulkan-1 -lggml-cpu -lggml-base -lgomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
+        sed -i "s|-lggml  -lggml-base -lwhisper|-lwhisper -lggml -lggml-vulkan -lvulkan -lcfgmgr32 -lggml-cpu -lggml-base -lgomp|" "$LOCALDESTDIR"/lib/pkgconfig/whisper.pc
     fi
     do_checkIfExist
     unset extracommands
-    if enabled_any vulkan libplacebo; then
-        do_pacman_remove shaderc
-    fi
 fi
 
 if [[ $exitearly = EE3 ]]; then
@@ -2277,12 +2274,9 @@ if [[ $ffmpeg != no ]] && enabled avisynth &&
 fi
 
 _check=(libvulkan.a vulkan.pc vulkan/vulkan.h d3d{kmthk,ukmdt}.h)
-if enabled whisper; then
-    do_uninstall "${_check[@]}"
-elif { { [[ $ffmpeg != no ]] && enabled_any vulkan libplacebo; } ||
+if { { [[ $ffmpeg != no ]] && enabled_any vulkan libplacebo; } ||
      { [[ $mpv != n ]] && ! mpv_disabled_any vulkan libplacebo; } } &&
     do_vcs "$SOURCE_REPO_VULKANLOADER" vulkan-loader; then
-    do_pacman_remove vulkan-loader vulkan-headers
     _wine_mirror=https://raw.githubusercontent.com/wine-mirror/wine/master/include
     _mabs=https://raw.githubusercontent.com/m-ab-s/mabs-patches/master/vulkan-loader
     do_pacman_install uasm
