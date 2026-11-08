@@ -894,6 +894,51 @@ if [[ $ffmpeg != no ]] && enabled libsvtjpegxs &&
     do_checkIfExist
 fi
 
+_check=(bin-global/grk_{{de,}compress,dump,transcode}.exe libgrokj2k{codec,}.a libgrokj2k{codec,}.pc) # headers are inside a versioned folder, don't wanna think about it
+if do_vcs "$SOURCE_REPO_GROK"; then
+    # check WIN32 and add "slash options" is asking for trouble
+    # don't need mercury but no way to disable as option
+    git apply << EOF
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d8ef707f..77e467cb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -185,7 +185,7 @@ if(GRK_BUILD_CORE_EXAMPLES OR GRK_BUILD_CODEC_EXAMPLES)
+   add_subdirectory(examples)
+ endif()
+ 
+-if(WIN32)
++if(MSVC)
+   add_link_options(
+     $<$<CONFIG:Release>:/DEBUG:NONE>
+     $<$<CONFIG:Release>:/RELEASE>)
+diff --git a/src/lib/core/CMakeLists.txt b/src/lib/core/CMakeLists.txt
+index 320468bf..2e37d33b 100644
+--- a/src/lib/core/CMakeLists.txt
++++ b/src/lib/core/CMakeLists.txt
+@@ -294,13 +294,6 @@ target_link_libraries(\${GROK_CORE_NAME} PRIVATE hwy \${LCMS_LIBNAME})
+ set(MERCURY_DIR \${CMAKE_SOURCE_DIR}/mercury)
+ find_program(CARGO_EXECUTABLE cargo)
+ set(GRK_ENABLE_MERCURY OFF)
+-if(CARGO_EXECUTABLE AND EXISTS \${MERCURY_DIR}/Cargo.toml)
+-  execute_process(COMMAND \${CARGO_EXECUTABLE} --version
+-    RESULT_VARIABLE CARGO_VERSION_RESULT OUTPUT_QUIET ERROR_QUIET)
+-  if(CARGO_VERSION_RESULT EQUAL 0)
+-    set(GRK_ENABLE_MERCURY ON)
+-  endif()
+-endif()
+ set(GRK_ENABLE_MERCURY \${GRK_ENABLE_MERCURY} PARENT_SCOPE)
+ 
+ set(MERCURY_HOOK_SOURCES \${CMAKE_CURRENT_SOURCE_DIR}/mercury_fastpath.cpp
+EOF
+    do_git_submodule
+    do_uninstall "${_check[@]}"
+    # disable libtiff building make it fail to find some zlib for whatever reason, so leave it on
+    do_cmakeinstall global -DGRK_BUILD_{LIBPNG,LCMS2,JPEG,CORE_EXAMPLES}=OFF \
+        -DSPDLOG_FMT_EXTERNAL=ON -Dwebp=OFF # for subprojects (webp: from libtiff, grok won't support webp anyways, currently at least)
+    do_checkIfExist
+fi
+
 if [[ $exitearly = EE3 ]]; then
     do_simple_print -p '\n\t'"${orange}Exit due to env var MABS_EXIT_EARLY set to EE3"
     exit 0
