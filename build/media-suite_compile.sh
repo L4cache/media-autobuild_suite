@@ -896,7 +896,7 @@ fi
 
 _check=(bin-global/grk_{{de,}compress,dump,transcode}.exe libgrokj2k{codec,}.a libgrokj2k{codec,}.pc) # headers are inside a versioned folder, don't wanna think about it
 if do_vcs "$SOURCE_REPO_GROK"; then
-    # check WIN32 and add "slash options" is asking for trouble
+    # check WIN32 and add "slash options" is asking for trouble cuz mingw set WIN32 too but doesn't use "slash options"
     # don't need mercury but no way to disable as option
     git apply << EOF
 diff --git a/CMakeLists.txt b/CMakeLists.txt
