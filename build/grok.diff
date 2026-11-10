@@ -1,0 +1,114 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d8ef707f..77e467cb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -185,7 +185,7 @@ if(GRK_BUILD_CORE_EXAMPLES OR GRK_BUILD_CODEC_EXAMPLES)
+   add_subdirectory(examples)
+ endif()
+ 
+-if(WIN32)
++if(MSVC)
+   add_link_options(
+     $<$<CONFIG:Release>:/DEBUG:NONE>
+     $<$<CONFIG:Release>:/RELEASE>)
+diff --git a/examples/codec/CMakeLists.txt b/examples/codec/CMakeLists.txt
+index 9f1ce5ec..cab01011 100644
+--- a/examples/codec/CMakeLists.txt
++++ b/examples/codec/CMakeLists.txt
+@@ -10,7 +10,7 @@ foreach(exe codec_decompress_from_file
+ )
+   add_executable(${exe} ${exe}.cpp)
+   target_compile_options(${exe} PRIVATE ${GROK_COMPILE_OPTIONS})
+-  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
++  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT WIN32)
+ 	target_link_options(${exe}  PUBLIC "LINKER:-z,now")
+   endif()
+ 
+diff --git a/examples/core/CMakeLists.txt b/examples/core/CMakeLists.txt
+index 46dc7694..2f6eba3e 100644
+--- a/examples/core/CMakeLists.txt
++++ b/examples/core/CMakeLists.txt
+@@ -13,7 +13,7 @@ foreach(exe core_decompress
+ )
+   add_executable(${exe} ${exe}.cpp ${common_SRCS})
+   target_compile_options(${exe} PRIVATE ${GROK_COMPILE_OPTIONS})
+-  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
++  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT WIN32)
+ 	  target_link_options(${exe}  PUBLIC "LINKER:-z,now")
+   endif()
+ 
+diff --git a/src/bin/codec/CMakeLists.txt b/src/bin/codec/CMakeLists.txt
+index d3a3d3c8..7c918e37 100644
+--- a/src/bin/codec/CMakeLists.txt
++++ b/src/bin/codec/CMakeLists.txt
+@@ -7,7 +7,7 @@ include_directories(
+ foreach(exe grk_decompress grk_compress grk_dump)
+   add_executable(${exe} ${exe}.cpp)
+   target_compile_options(${exe} PRIVATE ${GROK_COMPILE_OPTIONS})
+-  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
++  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT WIN32)
+ 	target_link_options(${exe}  PUBLIC "LINKER:-z,now")
+   endif()
+ 
+@@ -30,7 +30,7 @@ endforeach()
+ # grk_transcode only needs the core library, not the codec library
+ add_executable(grk_transcode grk_transcode.cpp)
+ target_compile_options(grk_transcode PRIVATE ${GROK_COMPILE_OPTIONS})
+-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
++if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT WIN32)
+   target_link_options(grk_transcode PUBLIC "LINKER:-z,now")
+ endif()
+ target_link_libraries(grk_transcode ${GROK_CORE_NAME})
+diff --git a/src/lib/codec/CMakeLists.txt b/src/lib/codec/CMakeLists.txt
+index e9919626..a691e930 100644
+--- a/src/lib/codec/CMakeLists.txt
++++ b/src/lib/codec/CMakeLists.txt
+@@ -80,7 +80,7 @@ set_target_properties(${GROK_CODEC_NAME} PROPERTIES ${GROK_LIBRARY_PROPERTIES})
+ target_compile_options(${GROK_CODEC_NAME} PRIVATE ${GROK_COMPILE_OPTIONS})
+ 
+ # hardening
+-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
++if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT WIN32)
+ 	target_link_options(${GROK_CODEC_NAME} PRIVATE "LINKER:-z,now")
+ endif()
+ 
+diff --git a/src/lib/core/CMakeLists.txt b/src/lib/core/CMakeLists.txt
+index 320468bf..4c3eb868 100644
+--- a/src/lib/core/CMakeLists.txt
++++ b/src/lib/core/CMakeLists.txt
+@@ -266,7 +266,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL Emscripten)
+   target_compile_options(${exe} PUBLIC -matomics)
+ endif()
+ 
+-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
++if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT WIN32)
+   target_link_options(${GROK_CORE_NAME} PRIVATE "LINKER:-z,now")
+ endif()
+ 
+@@ -294,13 +294,6 @@ target_link_libraries(${GROK_CORE_NAME} PRIVATE hwy ${LCMS_LIBNAME})
+ set(MERCURY_DIR ${CMAKE_SOURCE_DIR}/mercury)
+ find_program(CARGO_EXECUTABLE cargo)
+ set(GRK_ENABLE_MERCURY OFF)
+-if(CARGO_EXECUTABLE AND EXISTS ${MERCURY_DIR}/Cargo.toml)
+-  execute_process(COMMAND ${CARGO_EXECUTABLE} --version
+-    RESULT_VARIABLE CARGO_VERSION_RESULT OUTPUT_QUIET ERROR_QUIET)
+-  if(CARGO_VERSION_RESULT EQUAL 0)
+-    set(GRK_ENABLE_MERCURY ON)
+-  endif()
+-endif()
+ set(GRK_ENABLE_MERCURY ${GRK_ENABLE_MERCURY} PARENT_SCOPE)
+ 
+ set(MERCURY_HOOK_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/mercury_fastpath.cpp
+diff --git a/src/lib/plugin/CMakeLists.txt b/src/lib/plugin/CMakeLists.txt
+index 9af74dc8..034ed233 100644
+--- a/src/lib/plugin/CMakeLists.txt
++++ b/src/lib/plugin/CMakeLists.txt
+@@ -13,7 +13,7 @@ set(GROK_PLUGIN_SRCS
+ add_library(${GROK_PLUGIN_NAME} ${GROK_PLUGIN_SRCS})
+ 
+ set_target_properties(${GROK_PLUGIN_NAME} PROPERTIES ${GROK_LIBRARY_PROPERTIES})
+-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
++if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND NOT WIN32)
+   target_link_options(${GROK_PLUGIN_NAME} PRIVATE "LINKER:-z,now")
+ endif()
+ 
